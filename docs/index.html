@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=1.0, user-scalable=yes" />
+
+  <title>
+    
+      Transit Trips (OBS) &middot; SFCTA Prospector
+    
+  </title>
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/assets/sfcta-logo-144.png">
+  <link rel="shortcut icon" href="/assets/favicon.ico" type="image/vnd.microsoft.icon" />
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+  <!-- LEAFLET -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <!-- LEAFLET PATTERN -->
+  <script src="https://teastman.github.io/Leaflet.pattern/leaflet.pattern.js"></script>
+  <!-- LEAFLET POLYLINE OFFSET -->
+  <script src="https://unpkg.com/leaflet-polylineoffset/leaflet.polylineoffset.js"></script>
+  <!-- LEAFLET TEXTPATH-->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-textpath@1.2.0/leaflet.textpath.min.js"></script>
+
+  <!-- VUE -->
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <!-- use the latest vue-select release -->
+  <script src="https://unpkg.com/vue-select@latest"></script>
+  <link rel="stylesheet" href="https://unpkg.com/vue-select@latest/dist/vue-select.css">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-slider-component@latest/theme/antd.css">
+
+  <!-- MAPBOX GL -->
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
+
+  <!-- SEMANTIC UI -->
+  <link rel="stylesheet" type="text/css" href="/assets/semantic/semantic.min.css">
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+  <script src="/assets/semantic/semantic.min.js"></script>
+
+  <!-- MORRIS CHARTS -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+  
+  <!-- CHROMA -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.3.6/chroma.min.js"></script>
+  
+  <!-- D3 -->
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://d3js.org/d3-array.v1.min.js"></script>
+  <script src="https://d3js.org/d3-scale.v2.min.js"></script>
+  <!-- Simple Statistics -->
+  <script src='https://unpkg.com/simple-statistics@7.0.2/dist/simple-statistics.min.js'></script>
+  
+  <!-- IONICONS -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+  <link rel="stylesheet" href="/assets/ionicons/leaflet.awesome-markers.css">
+  <script src="/assets/ionicons/leaflet.awesome-markers.min.js"></script>
+
+  <!-- Site CSS -->
+  <link rel="stylesheet" href="/assets/css/poole.css">
+  <link rel="stylesheet" href="/assets/css/syntax.css">
+  <link rel="stylesheet" href="/assets/css/sfcta.css">
+
+  <!-- GOOGLE ANALYTICS -->
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-100715169-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-100715169-2');
+  </script>
+
+  <!-- Google reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js?onload=vueRecaptchaApiLoaded&render=explicit" async defer></script>
+  <script src="https://unpkg.com/vue-recaptcha@latest/dist/vue-recaptcha.min.js"></script>
+
+  <!-- Page CSS -->
+  
+    
+      <link rel="stylesheet" href="/assets/css/main.css">
+    
+      <link rel="stylesheet" href="/assets/css/standalone.css">
+    
+      <link rel="stylesheet" href="/trnobstrips/main.css">
+    
+  
+
+  <!-- Google fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|PT+Sans:400,400italic,700">
+  <link href="https://fonts.googleapis.com/css?family=Alegreya+SC:900i|Merriweather|Oleo+Script+Swash+Caps:700" rel="stylesheet">
+
+</head>
+
+
+  <body>
+    <div class="container">
+      <div id="container">
+
+  <div id="slide-panel" v-bind:class="{ shrunken: isPanelHidden}">
+    <button class="ui tiny green icon button"
+            v-on:click="clickedShowHide">
+            <i class="angle double icon"
+            v-bind:class="{ left: isPanelHidden, right: !isPanelHidden}"></i>
+    </button>
+  </div> 
+  
+  <div id="panel" v-bind:class="{ shrunken: isPanelHidden}">
+      <div id="preheader">
+        <hr/>
+        <h3 class="apptitle">Transit Trips (On-Board Survey)</h3>
+        <div id="helpbar">
+            <button class="ui mini right labeled icon violet button"
+                    v-on:click="clickToggleHelp">
+                    <i class="help circle icon"></i>
+                    What is this?
+            </button>
+            &nbsp;
+            <button class="ui mini right labeled icon violet button"
+                    v-on:click="this.window.open('https://www.sfcta.org/congestion','_blank')">
+                    <i class="arrow right icon"></i>
+                    Learn More
+            </button>
+            <hr/>
+           </div>
+
+          <div id="picker">
+            <!--h5 style="margin-top:15px">CHOOSE YEAR(S)</h5>
+            <vue-slider v-bind="scnSlider" v-model="sliderValue"></vue-slider-->
+
+            <h5 style="margin-top:15px">CHOOSE OPERATOR:</h5>
+            <select v-model="selected_dim1">
+              <option v-for="option in dim1_options" v-bind:value="option.value">
+                ${option.text}
+              </option>
+            </select> 
+            
+            <h5 style="margin-top:15px">CHOOSE INCOME:</h5>
+            <select v-model="selected_dim2">
+              <option v-for="option in dim2_options" v-bind:value="option.value">
+                ${option.text}
+              </option>
+            </select>            
+            
+            <!--h5 style="margin-top:15px">CHOOSE TIME PERIOD:</h5>
+            <select v-model="selected_dim3">
+              <option v-for="option in dim3_options" v-bind:value="option.value">
+                ${option.text}
+              </option>
+            </select-->
+            
+            <h5 style="margin-top:15px">CHOOSE NORMALIZER:</h5>
+            <select v-model="selected_norm">
+              <option v-for="option in norm_options" v-bind:value="option.value">
+                ${option.text}
+              </option>
+            </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <!--input type="checkbox" id="pct_checkbox" v-model="pct_check" v-bind:disabled="!comp_check" style="margin-top:0px">
+            <label for="pct_checkbox"><b>&nbsp;&nbsp;PERCENT DIFF</b></label-->
+            
+            <hr/>
+
+            <label><b>CHOOSE CUSTOM BREAK POINTS</b></label>
+            <br>
+            <input v-model.number="bp0" type="number" step="any" v-bind:disabled="true" style="width:55px;background-color:#f8d488;margin-top:5px">
+            <input v-model.number.lazy="bp1" type="number" step="any" v-bind:disabled="!custom_check" style="width:55px;">
+            <input v-model.number.lazy="bp2" type="number" step="any" v-bind:disabled="!custom_check" style="width:55px;">
+            <input v-model.number.lazy="bp3" type="number" step="any" v-bind:disabled="!custom_check" style="width:55px;">
+            <input v-model.number.lazy="bp4" type="number" step="any" v-bind:disabled="!custom_check" style="width:55px;">
+            <input v-model.number="bp5" type="number" step="any" v-bind:disabled="true" style="width:55px;background-color:#f8d488">            
+
+            <button v-on:click="updateMap"
+                    v-bind:class="{ active: isUpdActive, yellow: isUpdActive}"
+                     class="mini ui grey button"
+                    v-bind:disabled="!custom_check" style="margin-top:10px">
+                     Update Map!</button>            
+
+            <h5 style="margin-top:25px">FREQUENCY DISTRIBUTION</h5>
+            <div id="dist-chart" style="height: 200px">
+            </div>
+            
+          </div>
+      </div>
+      <div id="header">
+          <!--div id="stats-panel">
+            <hr style="margin-bottom:-5px;" />
+            <div id="chartinfo"><h3 style="font-size: 22px;">${chartTitle}</h3></div>
+            <div id="geoinfo"><h5>${chartSubtitle}</h5></div>
+            <div id="longchart">
+                <div class="ui active dimmer">
+                  <div class="ui text loader">Loading</div>
+                </div>
+            </div>
+          </div-->
+      </div>
+
+      <div class="logo">
+        <hr/>
+        <a class="agency-link" target="_blank" href="https://www.sfcta.org">
+          <img class="img-logo" src="/assets/SFCTA Logo dark-background.svg" width="80%">
+        </a>
+      </div>
+    </div>
+
+  <div id="helpbox" v-if="showHelp" class="ui segment">
+  <div v-cloak> <!-- hides everything until Vue finished loading -->
+        <h2 style="margin-bottom:0px;">SF-CHAMP Trips</h2>
+        <hr style="margin-bottom:5px;margin-top:5px"/>
+        Add description.
+
+        <ul>
+        <li><b>metric 1</b> abcd</li>
+        <li><b>metric 2</b> abcd</li>
+        </ul>
+
+        <h2 style="margin-top:10px; margin-bottom:0px;">How to use this map</h2>
+        <hr style="margin-bottom:5px;margin-top:5px"/>
+        <ul>
+        <li>Select a metric to display it on the map for all geographies.</li>
+        <li>Move the year slider to map historic data.</li>
+        <li>Choose time period to display metric.</li>
+        <li>Click on a geography for more information.</li>
+        </ul>
+
+        <div style="margin-top:20px;">
+          <button v-on:click="clickToggleHelp" class="small ui right floated violet button">
+            &nbsp;OK&nbsp;
+          </button>
+
+          <button v-on:click="this.window.open('/assets/sfcta_cmp_data_2017.zip')"
+                  class="small ui right labeled icon floated yellow button"
+                  style="margin-right:5px">
+                  <i class="icon download"></i>
+                  Download data (.zip)
+          </button>
+
+          <button v-on:click="this.window.open('https://www.sfcta.org/sf-champ-modeling','_blank')"
+                  class="small ui right floated basic violet button"
+                  style="margin-right:5px">
+                  Learn more&hellip;
+          </button>
+
+        </div>
+  </div>
+  </div>
+  
+
+
+  <div id="sfmap"></div>
+
+</div>
+
+
+<script type="application/javascript" src="/bundles/trnobstrips.js"></script>
+
+    </div>
+  </body>
+
+</html>
