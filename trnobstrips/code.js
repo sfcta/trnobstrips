@@ -53,7 +53,7 @@ let streetLayer = L.tileLayer(url2, {
   accessToken:token,
   pane: 'shadowPane',
 });
-streetLayer.addTo(mymap);
+//streetLayer.addTo(mymap);
 
 // some important global variables.
 const API_SERVER = 'https://api.sfcta.org/api/';
@@ -89,15 +89,17 @@ const BWIDTH_MAP = {
 };
 const MAX_PCTDIFF = 200;
 const CUSTOM_BP_DICT = {
-  'final_tripweight_2015': {'none': {'base':[500, 1000, 2000, 3000]},
-							'sq_mile': {'base':[2000, 4000, 6000, 8000]}},
+	'origins': {'none': {'base':[500, 1000, 2000, 3000]},
+				'sq_mile': {'base':[2000, 4000, 6000, 8000]}},
+	'residents': {'none': {'base':[500, 1000, 2000, 3000]},
+				'sq_mile': {'base':[2000, 4000, 6000, 8000]}},
 }
 
 const METRIC_UNITS = {'sq_mile': 'SQMI',
                       'job2015': '100 JOBS',
                       'pop2015': '100 RESIDENTS'};
-const METRIC_DESC = {'sq_mile': 'sqmi','job2015': '100 jobs',
-                      'pop2015': '100 residents', 'final_tripweight_2015': 'wtd_trips'
+const METRIC_DESC = {'sq_mile': 'sqmi','job2015': '100 jobs','pop2015': '100 residents',
+					'origins': 'trip origins', 'residents': 'trip residents'
 };
 
 let sel_colorvals, sel_colors, sel_binsflag;
@@ -548,7 +550,7 @@ function styleByMetricColor(feat) {
               sel_binsflag
               );
   //if (!color) color = MISSING_COLOR;
-  let fo = 1.0;
+  let fo = 0.7;
   if (feat['metric']==0 || !color) {
     fo = 0;
   }
@@ -800,6 +802,16 @@ async function selectionChanged(thing) {
   }
 }
 
+async function metricSelect(metric) {
+	app.selected_metric = metric;
+	selectionChanged();
+}
+
+async function incomeSelect(inc_cat) {
+	app.selected_dim2 = inc_cat;
+	selectionChanged();
+}
+
 async function updateMap(thing) {
   app.isUpdActive = false;
   let selfeat = await drawMapFeatures(false);
@@ -873,9 +885,10 @@ let app = new Vue({
     bwbp4: 0.0,
     bwbp5: 0.0,
     
-    selected_metric: 'final_tripweight_2015',
+    selected_metric: 'residents',
     metric_options: [
-    {text: 'trips', value: 'final_tripweight_2015'},
+	{text: 'Trip Residents', value: 'residents'},
+    {text: 'Trip Origins', value: 'origins'},
     ],
     
     selected_norm: 'sq_mile',
@@ -887,8 +900,8 @@ let app = new Vue({
     selected_dim2: 'LOW_INC',
     dim2_options: [
     {text: 'ALL', value: 'ALL'},
-    {text: 'LOW_INCOME', value: 'LOW_INC'},
-    {text: 'NOT_LOW_INCOME', value: 'NOT_LOW_INC'},
+    {text: 'LOW INCOME', value: 'LOW_INC'},
+    {text: 'NOT LOW INCOME', value: 'NOT_LOW_INC'},
     ],
     chartTitle: 'AVG_RIDE TREND',
     chartSubtitle: chart_deftitle,
@@ -905,6 +918,7 @@ let app = new Vue({
 	{text: 'AC Transit', value: 'AC Transit'},
 	{text: 'GGT (bus)', value: 'Golden Gate Transit (bus)'},
 	{text: 'SamTrans', value: 'SamTrans'},
+	{text: 'Other', value: 'Other'},
     ],
     selected_dim3: 'DAILY',
     dim3_options: [
@@ -952,6 +966,8 @@ let app = new Vue({
     bwUpdateMap: bwUpdateMap,
     clickToggleHelp: clickToggleHelp,
     clickedShowHide: clickedShowHide,
+	metricSelect: metricSelect,
+	incomeSelect: incomeSelect,
   },
   components: {
     vueSlider,

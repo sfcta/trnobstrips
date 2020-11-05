@@ -143,19 +143,39 @@
             <!--h5 style="margin-top:15px">CHOOSE YEAR(S)</h5>
             <vue-slider v-bind="scnSlider" v-model="sliderValue"></vue-slider-->
 
-            <h5 style="margin-top:15px">CHOOSE OPERATOR:</h5>
+            <h5 style="margin-top:15px">CHOOSE METRIC:</h5>
+			<div id="vizbuttons" class="compact ui horizontal mini buttons">
+				<button v-for="option in metric_options"
+                    v-on:click="metricSelect(option.value)"
+                    class="ui grey button"
+                    v-bind:class="{ active: option.value==selected_metric, yellow: option.value==selected_metric }">
+                    ${option.text}
+				</button>
+			</div>
+
+            <h5 style="margin-top:15px">CHOOSE INCOME:</h5>
+			<div id="vizbuttons" class="compact ui horizontal mini buttons">
+				<button v-for="option in dim2_options"
+                    v-on:click="incomeSelect(option.value)"
+                    class="ui grey button"
+                    v-bind:class="{ active: option.value==selected_dim2, yellow: option.value==selected_dim2 }">
+                    ${option.text}
+				</button>
+			</div>
+			
+			<h5 style="margin-top:15px">CHOOSE OPERATOR:</h5>
             <select v-model="selected_dim1">
               <option v-for="option in dim1_options" v-bind:value="option.value">
                 ${option.text}
               </option>
             </select> 
             
-            <h5 style="margin-top:15px">CHOOSE INCOME:</h5>
+            <!--h5 style="margin-top:15px">CHOOSE INCOME:</h5>
             <select v-model="selected_dim2">
               <option v-for="option in dim2_options" v-bind:value="option.value">
                 ${option.text}
               </option>
-            </select>            
+            </select-->            
             
             <!--h5 style="margin-top:15px">CHOOSE TIME PERIOD:</h5>
             <select v-model="selected_dim3">
